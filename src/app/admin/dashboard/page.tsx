@@ -15,10 +15,12 @@ import {
   ChevronRight,
   Search,
   Filter,
-  Settings
+  Settings,
+  UserCheck
 } from 'lucide-react'
 import SubscriptionPlanManager from '../../../components/SubscriptionPlanManager'
 import StripeManager from '../../../components/StripeManager'
+import InfluencerManager from '../../../components/InfluencerManager'
 
 interface User {
   id: string
@@ -72,7 +74,7 @@ export default function AdminDashboard() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'users' | 'subscriptions' | 'plans' | 'stripe'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'subscriptions' | 'plans' | 'stripe' | 'influencers'>('users')
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
@@ -272,6 +274,17 @@ export default function AdminDashboard() {
                 <CreditCard className="h-4 w-4 inline mr-2" />
                 Stripe Config
               </button>
+              <button
+                onClick={() => setActiveTab('influencers')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'influencers'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <UserCheck className="h-4 w-4 inline mr-2" />
+                Influencers
+              </button>
             </nav>
           </div>
 
@@ -281,6 +294,8 @@ export default function AdminDashboard() {
               <SubscriptionPlanManager token={localStorage.getItem('token') || ''} />
             ) : activeTab === 'stripe' ? (
               <StripeManager token={localStorage.getItem('token') || ''} />
+            ) : activeTab === 'influencers' ? (
+              <InfluencerManager />
             ) : (
               <>
                 {/* Search */}

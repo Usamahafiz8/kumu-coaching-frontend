@@ -18,6 +18,7 @@ import {
   Settings
 } from 'lucide-react'
 import SubscriptionPlanManager from '../../../components/SubscriptionPlanManager'
+import StripeManager from '../../../components/StripeManager'
 
 interface User {
   id: string
@@ -71,7 +72,7 @@ export default function AdminDashboard() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'users' | 'subscriptions' | 'plans'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'subscriptions' | 'plans' | 'stripe'>('users')
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
@@ -260,13 +261,26 @@ export default function AdminDashboard() {
                 <Settings className="h-4 w-4 inline mr-2" />
                 Subscription Plans
               </button>
+              <button
+                onClick={() => setActiveTab('stripe')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'stripe'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <CreditCard className="h-4 w-4 inline mr-2" />
+                Stripe Config
+              </button>
             </nav>
           </div>
 
           <div className="p-6">
-            {/* Subscription Plans Tab */}
+            {/* Tab Content */}
             {activeTab === 'plans' ? (
               <SubscriptionPlanManager token={localStorage.getItem('token') || ''} />
+            ) : activeTab === 'stripe' ? (
+              <StripeManager token={localStorage.getItem('token') || ''} />
             ) : (
               <>
                 {/* Search */}

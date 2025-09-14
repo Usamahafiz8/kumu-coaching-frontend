@@ -16,11 +16,15 @@ import {
   Search,
   Filter,
   Settings,
-  UserCheck
+  UserCheck,
+  FileText,
+  Mail
 } from 'lucide-react'
 import SubscriptionPlanManager from '../../../components/SubscriptionPlanManager'
-import StripeManager from '../../../components/StripeManager'
+import StripeConfigManager from '../../../components/StripeConfigManager'
 import InfluencerManager from '../../../components/InfluencerManager'
+import EmailConfigManager from '../../../components/EmailConfigManager'
+import EmailTemplateSelector from '../../../components/EmailTemplateSelector'
 
 interface User {
   id: string
@@ -74,7 +78,7 @@ export default function AdminDashboard() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'users' | 'subscriptions' | 'plans' | 'stripe' | 'influencers'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'subscriptions' | 'plans' | 'stripe' | 'influencers' | 'email' | 'templates'>('users')
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
@@ -163,139 +167,252 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-sm text-gray-600">Welcome back, {user?.firstName}</p>
+      {/* Sidebar */}
+      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg border-r border-gray-200">
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="flex items-center justify-center h-16 px-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
+                <span className="text-white text-lg font-bold">K</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Kumu Coaching</h1>
+                <p className="text-xs text-gray-500">Admin Panel</p>
+              </div>
             </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-4 py-6 space-y-1">
             <button
-              onClick={handleLogout}
-              className="flex items-center text-gray-600 hover:text-gray-900"
+              onClick={() => setActiveTab('users')}
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'users'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
             >
-              <LogOut className="h-5 w-5 mr-2" />
-              Logout
+              <Users className="h-5 w-5 mr-3" />
+              Users ({users.length})
             </button>
+
+            <button
+              onClick={() => setActiveTab('subscriptions')}
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'subscriptions'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              <CreditCard className="h-5 w-5 mr-3" />
+              Subscriptions ({subscriptions.length})
+            </button>
+
+            <button
+              onClick={() => setActiveTab('plans')}
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'plans'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              <Settings className="h-5 w-5 mr-3" />
+              Subscription Plans
+            </button>
+
+            <button
+              onClick={() => setActiveTab('stripe')}
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'stripe'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              <CreditCard className="h-5 w-5 mr-3" />
+              Stripe Config
+            </button>
+
+            <button
+              onClick={() => setActiveTab('influencers')}
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'influencers'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              <UserCheck className="h-5 w-5 mr-3" />
+              Influencers
+            </button>
+
+            <button
+              onClick={() => setActiveTab('email')}
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'email'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              <Mail className="h-5 w-5 mr-3" />
+              Email Config
+            </button>
+
+            <button
+              onClick={() => setActiveTab('templates')}
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'templates'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              <FileText className="h-5 w-5 mr-3" />
+              Email Templates
+            </button>
+          </nav>
+
+          {/* User Profile */}
+          <div className="p-4 border-t border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">
+                  {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                <p className="text-xs text-gray-500 truncate">Administrator</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
-      </header>
+      </div>
+
+      {/* Main Content */}
+      <div className="pl-64">
+        {/* Top Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 capitalize">
+                  {activeTab === 'users' && 'User Management'}
+                  {activeTab === 'subscriptions' && 'Subscription Management'}
+                  {activeTab === 'plans' && 'Subscription Plans'}
+                  {activeTab === 'stripe' && 'Stripe Configuration'}
+                  {activeTab === 'influencers' && 'Influencer Management'}
+                  {activeTab === 'email' && 'Email Configuration'}
+                  {activeTab === 'templates' && 'Email Templates'}
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  {activeTab === 'users' && 'Manage users and their accounts'}
+                  {activeTab === 'subscriptions' && 'View and manage user subscriptions'}
+                  {activeTab === 'plans' && 'Create and manage subscription plans'}
+                  {activeTab === 'stripe' && 'Configure Stripe payment settings'}
+                  {activeTab === 'influencers' && 'Manage influencers and commissions'}
+                  {activeTab === 'email' && 'Configure email service settings'}
+                  {activeTab === 'templates' && 'Manage email templates'}
+                </p>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900">
+                    Welcome back, {user?.firstName}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {new Date().toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <div className="flex items-center">
-                <Users className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{users.length}</p>
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Total Users</p>
+                  <p className="text-3xl font-bold text-gray-900">{users.length}</p>
+                  <p className="text-gray-500 text-xs mt-1">+12% from last month</p>
+                </div>
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <Users className="h-6 w-6 text-gray-600" />
                 </div>
               </div>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow">
-              <div className="flex items-center">
-                <CreditCard className="h-8 w-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Active Subscriptions</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.activeSubscriptions}</p>
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Active Subscriptions</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.activeSubscriptions}</p>
+                  <p className="text-gray-500 text-xs mt-1">+8% from last month</p>
+                </div>
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <CreditCard className="h-6 w-6 text-gray-600" />
                 </div>
               </div>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow">
-              <div className="flex items-center">
-                <DollarSign className="h-8 w-8 text-yellow-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                  <p className="text-2xl font-bold text-gray-900">${stats.totalRevenue.toFixed(2)}</p>
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Total Revenue</p>
+                  <p className="text-3xl font-bold text-gray-900">${stats.totalRevenue.toFixed(2)}</p>
+                  <p className="text-gray-500 text-xs mt-1">All time earnings</p>
+                </div>
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-gray-600" />
                 </div>
               </div>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow">
-              <div className="flex items-center">
-                <TrendingUp className="h-8 w-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                  <p className="text-2xl font-bold text-gray-900">${stats.monthlyRevenue.toFixed(2)}</p>
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Monthly Revenue</p>
+                  <p className="text-3xl font-bold text-gray-900">${stats.monthlyRevenue.toFixed(2)}</p>
+                  <p className="text-gray-500 text-xs mt-1">+15% from last month</p>
+                </div>
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-gray-600" />
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8 px-6">
-              <button
-                onClick={() => setActiveTab('users')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'users'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Users ({users.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('subscriptions')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'subscriptions'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Subscriptions ({subscriptions.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('plans')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'plans'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <Settings className="h-4 w-4 inline mr-2" />
-                Subscription Plans
-              </button>
-              <button
-                onClick={() => setActiveTab('stripe')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'stripe'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <CreditCard className="h-4 w-4 inline mr-2" />
-                Stripe Config
-              </button>
-              <button
-                onClick={() => setActiveTab('influencers')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'influencers'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <UserCheck className="h-4 w-4 inline mr-2" />
-                Influencers
-              </button>
-            </nav>
-          </div>
-
-          <div className="p-6">
+        {/* Main Content */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="p-8">
             {/* Tab Content */}
             {activeTab === 'plans' ? (
               <SubscriptionPlanManager token={localStorage.getItem('token') || ''} />
             ) : activeTab === 'stripe' ? (
-              <StripeManager token={localStorage.getItem('token') || ''} />
+              <StripeConfigManager />
             ) : activeTab === 'influencers' ? (
               <InfluencerManager />
+            ) : activeTab === 'email' ? (
+              <EmailConfigManager />
+            ) : activeTab === 'templates' ? (
+              <EmailTemplateSelector />
             ) : (
               <>
                 {/* Search */}
@@ -307,169 +424,199 @@ export default function AdminDashboard() {
                       placeholder={`Search ${activeTab}...`}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
                     />
                   </div>
                 </div>
 
             {/* Users Table */}
             {activeTab === 'users' && (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        User
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Role
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email Verified
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Created
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {user.firstName} {user.lastName}
-                            </div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.role === 'admin' 
-                              ? 'bg-red-100 text-red-800' 
-                              : user.role === 'coach'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {user.role}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.status === 'active' 
-                              ? 'bg-green-100 text-green-800' 
-                              : user.status === 'inactive'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {user.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.emailVerified 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {user.emailVerified ? 'Verified' : 'Not Verified'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(user.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            <button className="text-blue-600 hover:text-blue-900">
-                              <Eye className="h-4 w-4" />
-                            </button>
-                            <button className="text-indigo-600 hover:text-indigo-900">
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button className="text-red-600 hover:text-red-900">
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                  <h3 className="text-lg font-semibold text-gray-900">User Management</h3>
+                  <p className="text-sm text-gray-600 mt-1">Manage all registered users</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          User
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Role
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Email Verified
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Created
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredUsers.map((user) => (
+                        <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-10 w-10">
+                                <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center shadow-sm">
+                                  <span className="text-sm font-medium text-white">
+                                    {user.firstName.charAt(0)}{user.lastName.charAt(0)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {user.firstName} {user.lastName}
+                                </div>
+                                <div className="text-sm text-gray-500">{user.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                              user.role === 'admin' 
+                                ? 'bg-gray-100 text-gray-800' 
+                                : user.role === 'coach'
+                                ? 'bg-gray-100 text-gray-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {user.role}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                              user.status === 'active' 
+                                ? 'bg-gray-100 text-gray-800' 
+                                : user.status === 'inactive'
+                                ? 'bg-gray-100 text-gray-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {user.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                              user.emailVerified 
+                                ? 'bg-gray-100 text-gray-800' 
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {user.emailVerified ? 'Verified' : 'Not Verified'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 
             {/* Subscriptions Table */}
             {activeTab === 'subscriptions' && (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        User
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Plan
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Amount
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Start Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        End Date
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredSubscriptions.map((subscription) => (
-                      <tr key={subscription.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {subscription.user.firstName} {subscription.user.lastName}
-                            </div>
-                            <div className="text-sm text-gray-500">{subscription.user.email}</div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{subscription.plan.name}</div>
-                          <div className="text-sm text-gray-500">{subscription.plan.type}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${subscription.amount}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            subscription.status === 'active' 
-                              ? 'bg-green-100 text-green-800' 
-                              : subscription.status === 'cancelled'
-                              ? 'bg-red-100 text-red-800'
-                              : subscription.status === 'expired'
-                              ? 'bg-gray-100 text-gray-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {subscription.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(subscription.startDate).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(subscription.endDate).toLocaleDateString()}
-                        </td>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                  <h3 className="text-lg font-semibold text-gray-900">Subscription Management</h3>
+                  <p className="text-sm text-gray-600 mt-1">View and manage all user subscriptions</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          User
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Plan
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Amount
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Start Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          End Date
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredSubscriptions.map((subscription) => (
+                        <tr key={subscription.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-10 w-10">
+                                <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center shadow-sm">
+                                  <span className="text-sm font-medium text-white">
+                                    {subscription.user.firstName.charAt(0)}{subscription.user.lastName.charAt(0)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {subscription.user.firstName} {subscription.user.lastName}
+                                </div>
+                                <div className="text-sm text-gray-500">{subscription.user.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{subscription.plan.name}</div>
+                            <div className="text-sm text-gray-500">{subscription.plan.type}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                            ${subscription.amount}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                              subscription.status === 'active' 
+                                ? 'bg-gray-100 text-gray-800' 
+                                : subscription.status === 'cancelled'
+                                ? 'bg-gray-100 text-gray-800'
+                                : subscription.status === 'expired'
+                                ? 'bg-gray-100 text-gray-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {subscription.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(subscription.startDate).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(subscription.endDate).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
               </>
@@ -478,5 +625,5 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
-  )
+    </div>  )
 }

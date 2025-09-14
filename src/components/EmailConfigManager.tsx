@@ -446,6 +446,120 @@ export default function EmailConfigManager() {
           <p><strong>Custom SMTP:</strong> Use your hosting provider's SMTP settings</p>
         </div>
       </div>
+
+      {/* Help Section */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 className="text-lg font-medium text-blue-900 mb-4 flex items-center">
+          <Mail className="h-5 w-5 mr-2" />
+          How to Set Up Email Configuration
+        </h3>
+        
+        <div className="space-y-4">
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Gmail Setup (Recommended for Testing)</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+              <li>Go to your <a href="https://myaccount.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Google Account settings</a></li>
+              <li>Click on <strong>"Security"</strong> in the left sidebar</li>
+              <li>Enable <strong>"2-Step Verification"</strong> if not already enabled</li>
+              <li>Go to <strong>"App passwords"</strong> and generate a new app password</li>
+              <li>Use these settings:</li>
+              <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+                <li><strong>SMTP Host:</strong> smtp.gmail.com</li>
+                <li><strong>SMTP Port:</strong> 587</li>
+                <li><strong>Username:</strong> your-gmail@gmail.com</li>
+                <li><strong>Password:</strong> your-app-password (not your regular password)</li>
+                <li><strong>Secure:</strong> TLS (checked)</li>
+              </ul>
+            </ol>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Outlook/Hotmail Setup</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+              <li>Go to your <a href="https://outlook.live.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Outlook account</a></li>
+              <li>Click on the gear icon → <strong>"View all Outlook settings"</strong></li>
+              <li>Go to <strong>"Mail" → "Sync email"</strong></li>
+              <li>Enable <strong>"Let devices and apps use POP"</strong></li>
+              <li>Use these settings:</li>
+              <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+                <li><strong>SMTP Host:</strong> smtp-mail.outlook.com</li>
+                <li><strong>SMTP Port:</strong> 587</li>
+                <li><strong>Username:</strong> your-email@outlook.com</li>
+                <li><strong>Password:</strong> your-outlook-password</li>
+                <li><strong>Secure:</strong> TLS (checked)</li>
+              </ul>
+            </ol>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Yahoo Mail Setup</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+              <li>Go to your <a href="https://mail.yahoo.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Yahoo Mail</a></li>
+              <li>Click on the gear icon → <strong>"More settings"</strong></li>
+              <li>Go to <strong>"Mailboxes" → "Your email address"</strong></li>
+              <li>Click <strong>"Generate app password"</strong></li>
+              <li>Use these settings:</li>
+              <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+                <li><strong>SMTP Host:</strong> smtp.mail.yahoo.com</li>
+                <li><strong>SMTP Port:</strong> 587</li>
+                <li><strong>Username:</strong> your-email@yahoo.com</li>
+                <li><strong>Password:</strong> your-app-password</li>
+                <li><strong>Secure:</strong> TLS (checked)</li>
+              </ul>
+            </ol>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Custom SMTP (Hosting Provider)</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+              <li>Contact your hosting provider for SMTP settings</li>
+              <li>Common hosting providers:</li>
+              <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+                <li><strong>cPanel Hosting:</strong> Usually mail.yourdomain.com, Port 587 or 465</li>
+                <li><strong>Bluehost:</strong> mail.yourdomain.com, Port 465 (SSL) or 587 (TLS)</li>
+                <li><strong>GoDaddy:</strong> smtpout.secureserver.net, Port 465 (SSL) or 587 (TLS)</li>
+                <li><strong>SiteGround:</strong> mail.yourdomain.com, Port 465 (SSL) or 587 (TLS)</li>
+              </ul>
+              <li>Use your hosting account email and password</li>
+            </ol>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Port and Security Settings</h4>
+            <div className="text-sm text-gray-700 space-y-2">
+              <div className="flex items-start">
+                <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded mr-2">TLS</span>
+                <div>
+                  <strong>Port 587 (TLS):</strong> Most common, secure connection. Check "Use secure connection" and select TLS.
+                </div>
+              </div>
+              <div className="flex items-start">
+                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded mr-2">SSL</span>
+                <div>
+                  <strong>Port 465 (SSL):</strong> Older but still secure. Check "Use secure connection" and select SSL.
+                </div>
+              </div>
+              <div className="flex items-start">
+                <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded mr-2">NONE</span>
+                <div>
+                  <strong>Port 25 (No encryption):</strong> Not recommended for security reasons.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Testing Your Configuration</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+              <li>Fill in all the SMTP settings above</li>
+              <li>Click <strong>"Test Connection"</strong> to verify your settings</li>
+              <li>If successful, click <strong>"Save Configuration"</strong></li>
+              <li>Use the <strong>"Send Test Email"</strong> feature to test email delivery</li>
+              <li>Check your email inbox (and spam folder) for the test email</li>
+            </ol>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -338,6 +338,82 @@ export default function StripeConfigManager() {
           Only administrators can view and modify these settings.
         </p>
       </div>
+
+      {/* Help Section */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 className="text-lg font-medium text-blue-900 mb-4 flex items-center">
+          <CreditCard className="h-5 w-5 mr-2" />
+          Where to Find Your Stripe Keys
+        </h3>
+        
+        <div className="space-y-4">
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Step 1: Access Stripe Dashboard</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+              <li>Go to <a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">https://dashboard.stripe.com</a></li>
+              <li>Sign in to your Stripe account</li>
+              <li>If you don't have an account, create one at <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">stripe.com</a></li>
+            </ol>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Step 2: Get Your API Keys</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+              <li>In the Stripe Dashboard, click on <strong>"Developers"</strong> in the left sidebar</li>
+              <li>Click on <strong>"API keys"</strong></li>
+              <li>You'll see two keys:</li>
+              <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+                <li><strong>Publishable key</strong> (starts with pk_test_ or pk_live_) - This is safe to use in frontend code</li>
+                <li><strong>Secret key</strong> (starts with sk_test_ or sk_live_) - Keep this secret, never expose in frontend</li>
+              </ul>
+            </ol>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Step 3: Set Up Webhooks (Optional but Recommended)</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+              <li>In the Stripe Dashboard, go to <strong>"Developers" → "Webhooks"</strong></li>
+              <li>Click <strong>"Add endpoint"</strong></li>
+              <li>Set the endpoint URL to: <code className="bg-gray-100 px-2 py-1 rounded text-xs">http://yourdomain.com/stripe/webhook</code></li>
+              <li>Select the events you want to listen for (recommended: payment_intent.succeeded, customer.subscription.created, etc.)</li>
+              <li>Click <strong>"Add endpoint"</strong></li>
+              <li>Click on the created webhook to get the <strong>Signing secret</strong> (starts with whsec_)</li>
+            </ol>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Step 4: Test vs Live Mode</h4>
+            <div className="text-sm text-gray-700 space-y-2">
+              <div className="flex items-start">
+                <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded mr-2">TEST</span>
+                <div>
+                  <strong>Test Mode:</strong> Use test keys (pk_test_ and sk_test_) for development and testing. No real money is charged.
+                </div>
+              </div>
+              <div className="flex items-start">
+                <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded mr-2">LIVE</span>
+                <div>
+                  <strong>Live Mode:</strong> Use live keys (pk_live_ and sk_live_) for production. Real money will be charged.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-gray-900 mb-2">Quick Test Keys (For Development Only)</h4>
+            <div className="text-sm text-gray-700 space-y-2">
+              <p>For testing purposes, you can use these test keys:</p>
+              <div className="bg-gray-50 p-3 rounded border">
+                <div className="space-y-1">
+                  <div><strong>Publishable Key:</strong> <code className="bg-gray-200 px-1 rounded text-xs">pk_test_51234567890abcdef...</code></div>
+                  <div><strong>Secret Key:</strong> <code className="bg-gray-200 px-1 rounded text-xs">sk_test_51234567890abcdef...</code></div>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">Note: These are example keys. Use your actual test keys from your Stripe dashboard.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

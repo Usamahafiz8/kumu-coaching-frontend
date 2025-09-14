@@ -127,8 +127,9 @@ export default function EmailConfigManager() {
         setError(`Connection test failed: ${data.message}`);
       }
     } catch (err) {
-      setTestResult({ success: false, message: err.message });
-      setError(err instanceof Error ? err.message : 'Connection test failed');
+      const errorMessage = err instanceof Error ? err.message : 'Connection test failed';
+      setTestResult({ success: false, message: errorMessage });
+      setError(errorMessage);
     } finally {
       setTesting(false);
     }

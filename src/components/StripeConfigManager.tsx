@@ -114,8 +114,9 @@ export default function StripeConfigManager() {
         setError(`Connection test failed: ${data.message}`);
       }
     } catch (err) {
-      setTestResult({ success: false, error: err.message });
-      setError(err instanceof Error ? err.message : 'Connection test failed');
+      const errorMessage = err instanceof Error ? err.message : 'Connection test failed';
+      setTestResult({ success: false, error: errorMessage });
+      setError(errorMessage);
     } finally {
       setTesting(false);
     }

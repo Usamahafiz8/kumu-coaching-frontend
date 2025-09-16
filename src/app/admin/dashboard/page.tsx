@@ -16,6 +16,7 @@ import PromoCodeManager from '../../../components/PromoCodeManager'
 import AppConfigManager from '../../../components/AppConfigManager'
 import PurchaseRecordsManager from '../../../components/PurchaseRecordsManager'
 import SubscriptionPlanManager from '../../../components/SubscriptionPlanManager'
+import InfluencerManager from '../../../components/InfluencerManager'
 
 interface User {
   id: string
@@ -34,7 +35,7 @@ export default function AdminDashboard() {
   const [user, setUser] = useState<any>(null)
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'users' | 'templates' | 'promocodes' | 'config' | 'purchases' | 'plans'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'templates' | 'promocodes' | 'influencers' | 'config' | 'purchases' | 'plans'>('users')
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
@@ -160,6 +161,18 @@ export default function AdminDashboard() {
             </button>
 
             <button
+              onClick={() => setActiveTab('influencers')}
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === 'influencers'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              <Users className="h-5 w-5 mr-3" />
+              Influencers
+            </button>
+
+            <button
               onClick={() => setActiveTab('purchases')}
               className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
                 activeTab === 'purchases'
@@ -232,6 +245,7 @@ export default function AdminDashboard() {
                   {activeTab === 'users' && 'User Management'}
                   {activeTab === 'templates' && 'Email Templates'}
                   {activeTab === 'promocodes' && 'Promo Code Management'}
+                  {activeTab === 'influencers' && 'Influencer Management'}
                   {activeTab === 'purchases' && 'Purchase Records'}
                   {activeTab === 'plans' && 'Subscription Plans'}
                   {activeTab === 'config' && 'App Configuration'}
@@ -240,6 +254,7 @@ export default function AdminDashboard() {
                   {activeTab === 'users' && 'Manage users and their accounts'}
                   {activeTab === 'templates' && 'Manage email templates'}
                   {activeTab === 'promocodes' && 'Create and manage promotional codes'}
+                  {activeTab === 'influencers' && 'Manage influencers and track commissions'}
                   {activeTab === 'purchases' && 'View and analyze purchase transactions'}
                   {activeTab === 'plans' && 'Manage subscription plans and pricing'}
                   {activeTab === 'config' && 'Configure application settings'}
@@ -316,6 +331,8 @@ export default function AdminDashboard() {
                 <EmailTemplateSelector />
               ) : activeTab === 'promocodes' ? (
                 <PromoCodeManager />
+              ) : activeTab === 'influencers' ? (
+                <InfluencerManager />
               ) : activeTab === 'purchases' ? (
                 <PurchaseRecordsManager />
               ) : activeTab === 'plans' ? (

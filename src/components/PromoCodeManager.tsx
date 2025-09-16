@@ -34,6 +34,17 @@ interface PromoCode {
   description?: string;
   campaignName?: string;
   notes?: string;
+  influencerId?: string;
+  influencer?: {
+    id: string;
+    user: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+    socialMediaHandle?: string;
+    platform?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -51,6 +62,7 @@ const STATUS_COLORS = {
 
 export default function PromoCodeManager() {
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
+  const [influencers, setInfluencers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,10 +80,12 @@ export default function PromoCodeManager() {
     description: '',
     campaignName: '',
     notes: '',
+    influencerId: '',
   });
 
   useEffect(() => {
     fetchPromoCodes();
+    fetchInfluencers();
   }, []);
 
   const fetchPromoCodes = async () => {
@@ -91,6 +105,24 @@ export default function PromoCodeManager() {
       setError(err instanceof Error ? err.message : 'Failed to fetch promo codes');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchInfluencers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/admin/influencers`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch influencers');
+
+      const data = await response.json();
+      setInfluencers(data.influencers || []);
+    } catch (err) {
+      console.error('Failed to fetch influencers:', err);
     }
   };
 
@@ -174,6 +206,7 @@ export default function PromoCodeManager() {
       description: promoCode.description || '',
       campaignName: promoCode.campaignName || '',
       notes: promoCode.notes || '',
+      influencerId: promoCode.influencerId || '',
     });
     setShowModal(true);
   };
@@ -190,6 +223,7 @@ export default function PromoCodeManager() {
       description: '',
       campaignName: '',
       notes: '',
+      influencerId: '',
     });
   };
 
@@ -260,6 +294,9 @@ export default function PromoCodeManager() {
                   Usage
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Influencer
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -310,6 +347,27 @@ export default function PromoCodeManager() {
                         {promoCode.usedCount}/{promoCode.usageLimit || '∞'}
                       </span>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {promoCode.influencer ? (
+                      <div className="flex items-center gap-2">
+                        <div className="flex-shrink-0 h-6 w-6">
+                          <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
+                            <Users className="h-3 w-3 text-blue-600" />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {promoCode.influencer.user.firstName} {promoCode.influencer.user.lastName}
+                          </div>
+                          {promoCode.influencer.socialMediaHandle && (
+                            <div className="text-xs text-gray-500">@{promoCode.influencer.socialMediaHandle}</div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400">No influencer</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -473,6 +531,26 @@ export default function PromoCodeManager() {
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Influencer (Optional)
+                </label>
+                <select
+                  value={formData.influencerId}
+                  onChange={(e) => setFormData(prev => ({ ...prev, influencerId: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select an influencer (optional)</option>
+                  {influencers.map((influencer) => (
+                    <option key={influencer.id} value={influencer.id}>
+                      {influencer.user.firstName} {influencer.user.lastName} 
+                      {influencer.socialMediaHandle && ` (@${influencer.socialMediaHandle})`}
+                      {influencer.platform && ` - ${influencer.platform}`}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

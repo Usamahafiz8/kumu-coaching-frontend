@@ -92,7 +92,7 @@ export default function EmailTemplateSelector() {
   const fetchTemplates = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/admin/email/templates`, {
+      const response = await fetch(`${API_BASE_URL}/admin/email-templates`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -129,7 +129,7 @@ export default function EmailTemplateSelector() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/admin/email/templates/${selectedTemplate.id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/email-templates/${selectedTemplate.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export default function EmailTemplateSelector() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Email Templates</h2>
         <div className="text-sm text-gray-500">
-          {templates.length} templates available
+          {templates?.length || 0} templates available
         </div>
       </div>
 
@@ -178,7 +178,7 @@ export default function EmailTemplateSelector() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templates.map((template) => {
+        {templates?.map((template) => {
           const preview = TEMPLATE_PREVIEWS[template.type as keyof typeof TEMPLATE_PREVIEWS] || {
             title: template.name,
             description: template.description || 'Email template',

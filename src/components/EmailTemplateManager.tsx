@@ -74,7 +74,7 @@ export default function EmailTemplateManager() {
   const fetchTemplates = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/admin/email/templates`, {
+      const response = await fetch(`${API_BASE_URL}/admin/email-templates`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -100,8 +100,8 @@ export default function EmailTemplateManager() {
     try {
       const token = localStorage.getItem('token');
       const url = editingTemplate 
-        ? `${API_BASE_URL}/admin/email/templates/${editingTemplate.id}`
-        : `${API_BASE_URL}/admin/email/templates`;
+        ? `${API_BASE_URL}/admin/email-templates/${editingTemplate.id}`
+        : `${API_BASE_URL}/admin/email-templates`;
       
       const method = editingTemplate ? 'PUT' : 'POST';
 
@@ -133,7 +133,7 @@ export default function EmailTemplateManager() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/admin/email/templates/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/email-templates/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -261,7 +261,7 @@ export default function EmailTemplateManager() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {templates.map((template) => (
+              {templates?.map((template) => (
                 <tr key={template.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{template.name}</div>
@@ -290,12 +290,12 @@ export default function EmailTemplateManager() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-1">
-                      {template.variables.slice(0, 3).map((variable) => (
+                      {template.variables?.slice(0, 3).map((variable) => (
                         <span key={variable} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
                           {`{{${variable}}}`}
                         </span>
                       ))}
-                      {template.variables.length > 3 && (
+                      {template.variables?.length > 3 && (
                         <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
                           +{template.variables.length - 3} more
                         </span>
